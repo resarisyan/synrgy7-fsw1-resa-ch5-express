@@ -1,17 +1,17 @@
 import fs from 'fs/promises';
-class PeopleController {
-  static initialPeople = async (value) => {
-    fs.writeFile('./data/result.json', JSON.stringify(value), 'utf8');
-  };
 
+class PeopleController {
   static storePeople = async (req, res) => {
     try {
       const data = await fs.readFile('./data/result.json', 'utf8');
       const parsedData = JSON.parse(data);
+      const { name, username, email } = req.body;
 
       parsedData.push({
         id: parsedData.length + 1,
-        ...req.body,
+        name,
+        username,
+        email,
       });
 
       await fs.writeFile(
@@ -20,7 +20,8 @@ class PeopleController {
         'utf8'
       );
       return res.status(201).send({
-        devMessage: 'People Created',
+        success: true,
+        message: 'People Created',
       });
     } catch (error) {
       console.error(error);
@@ -44,10 +45,14 @@ class PeopleController {
       const data = JSON.parse(rawData);
       const people = data.find((people) => people.id === Number(req.params.id));
       if (people) {
-        return res.status(200).send(people);
+        return res.status(200).send({
+          success: true,
+          data: people,
+        });
       } else {
         return res.status(404).send({
-          devMessage: `People with id ${id} Not Found`,
+          success: false,
+          message: `People with id ${id} Not Found`,
         });
       }
     } catch (error) {
@@ -63,17 +68,22 @@ class PeopleController {
       const peopleIndex = data.findIndex(
         (people) => people.id === Number(req.params.id)
       );
+      const { name, username, email } = req.body;
       if (peopleIndex !== -1) {
         data[peopleIndex] = {
           id: Number(req.params.id),
-          ...req.body,
+          name,
+          username,
+          email,
         };
         await fs.writeFile('./data/result.json', JSON.stringify(data), 'utf8');
         return res.status(200).send({
+          success: true,
           message: 'People Updated',
         });
       } else {
         return res.status(404).send({
+          success: false,
           message: `People with id ${id} Not Found`,
         });
       }
@@ -94,10 +104,12 @@ class PeopleController {
         data.splice(peopleIndex, 1);
         await fs.writeFile('./data/result.json', JSON.stringify(data), 'utf8');
         return res.status(200).send({
+          success: true,
           message: 'People Deleted',
         });
       } else {
         return res.status(404).send({
+          success: false,
           message: `People with id ${id} Not Found`,
         });
       }
