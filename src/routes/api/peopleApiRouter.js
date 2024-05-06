@@ -1,6 +1,6 @@
 import express from 'express';
-import PeopleController from '../controllers/PeopleController.js';
-import { idNotFound } from '../middlewares/error.middleware.js';
+import PeopleController from '../../controllers/PeopleController.js';
+import { idNotFound } from '../../middlewares/error.middleware.js';
 
 const router = express.Router();
 

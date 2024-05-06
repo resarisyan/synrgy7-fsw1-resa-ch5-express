@@ -1,6 +1,18 @@
 import fs from 'fs/promises';
 
 class PeopleController {
+  static index = async (req, res) => {
+    try {
+      const data = await fs.readFile('./data/result.json', 'utf8');
+      const peoples = JSON.parse(data);
+      res.render('index', {
+        peoples,
+      });
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
   static storePeople = async (req, res) => {
     try {
       const data = await fs.readFile('./data/result.json', 'utf8');
