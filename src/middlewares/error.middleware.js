@@ -14,9 +14,8 @@ const appError = (err, req, res, next) => {
   const errstatus_code = err.status_code || 400;
   const errMessage = err.message || 'Something went wrong';
   res.status(errstatus_code).json({
-    status: 'error',
+    success: false,
     message: errMessage,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
 
