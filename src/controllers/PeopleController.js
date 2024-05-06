@@ -130,6 +130,26 @@ class PeopleController {
       return [];
     }
   };
+
+  static uploadFile = async (req, res) => {
+    try {
+      if (req.file) {
+        return res.status(200).send({
+          success: true,
+          message: 'File Uploaded',
+          data: req.file,
+        });
+      } else {
+        return res.status(400).send({
+          success: false,
+          message: 'File must be uploaded',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
 }
 
 export default PeopleController;
