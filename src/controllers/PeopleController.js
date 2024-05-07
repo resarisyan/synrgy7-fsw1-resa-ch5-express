@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import cloudinary from '../middlewares/cloudinary.js';
 
 class PeopleController {
   static index = async (req, res) => {
