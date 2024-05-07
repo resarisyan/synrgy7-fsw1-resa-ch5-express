@@ -18,12 +18,19 @@ class PeopleController {
       const data = await fs.readFile('./data/result.json', 'utf8');
       const parsedData = JSON.parse(data);
       const { name, username, email } = req.body;
-
+      if (!req.file) {
+        return res.status(400).send({
+          success: false,
+          message: 'File must be uploaded',
+        });
+      }
+      const { filename } = req.file;
       parsedData.push({
         id: parsedData.length + 1,
         name,
         username,
         email,
+        image: filename,
       });
 
       await fs.writeFile(
@@ -81,12 +88,15 @@ class PeopleController {
         (people) => people.id === Number(req.params.id)
       );
       const { name, username, email } = req.body;
+
       if (peopleIndex !== -1) {
+        const image = req.file ? req.file.filename : data[peopleIndex].image;
         data[peopleIndex] = {
           id: Number(req.params.id),
           name,
           username,
           email,
+          image,
         };
         await fs.writeFile('./data/result.json', JSON.stringify(data), 'utf8');
         return res.status(200).send({
@@ -113,6 +123,8 @@ class PeopleController {
         (people) => people.id === Number(req.params.id)
       );
       if (peopleIndex !== -1) {
+        const imagePath = `./public/uploads/${data[peopleIndex].image}`;
+        await fs.unlink(imagePath);
         data.splice(peopleIndex, 1);
         await fs.writeFile('./data/result.json', JSON.stringify(data), 'utf8');
         return res.status(200).send({
@@ -138,6 +150,35 @@ class PeopleController {
           success: true,
           message: 'File Uploaded',
           data: req.file,
+        });
+      } else {
+        return res.status(400).send({
+          success: false,
+          message: 'File must be uploaded',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  static cdnUploadImage = async (req, res) => {
+    try {
+      if (req.file) {
+        const fileBase64 = req.file.buffer.toString('base64');
+        const file = `data:${req.file.mimetype};base64,${fileBase64}`;
+
+        cloudinary.uploader.upload(file, async (error, result) => {
+          if (error) {
+            console.error(error);
+            return [];
+          }
+          return res.status(200).send({
+            success: true,
+            message: 'File Uploaded',
+            data: result,
+          });
         });
       } else {
         return res.status(400).send({

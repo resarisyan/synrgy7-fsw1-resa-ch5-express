@@ -59,6 +59,13 @@
         font-weight: bold;
         text-align: center;
       }
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
     </style>
   </head>
   <body>
@@ -71,6 +78,7 @@
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Image</th>
           </tr>
         </thead>
         <tbody>
@@ -80,6 +88,13 @@
             <td><%= people.name %></td>
             <td><%= people.username %></td>
             <td><%= people.email %></td>
+            <td>
+              <img
+                class="avatar"
+                src="../uploads/<%= people.image %>"
+                alt="<%= people.name %>"
+              />
+            </td>
           </tr>
           <% }); %>
         </tbody>
